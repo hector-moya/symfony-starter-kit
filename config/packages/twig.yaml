@@ -1,0 +1,10 @@
+twig:
+    file_name_pattern: '*.twig'
+    # Global variables available in every template
+    globals:
+        app_name: 'Symfony Starter Kit'
+        # current_year: '@App\Twig\GlobalExtension'  # example custom extension
+
+when@test:
+    twig:
+        strict_variables: true

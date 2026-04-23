@@ -1,0 +1,11 @@
+{
+    "name": "symfony-starter-kit",
+    "version": "1.0.0",
+    "description": "Symfony 7 Starter Kit",
+    "private": true,
+    "scripts": {
+        "build": "echo 'AssetMapper handles assets — no build step needed. Run: php bin/console importmap:install'",
+        "dev": "echo 'AssetMapper handles assets — no build step needed.'"
+    },
+    "devDependencies": {}
+}
