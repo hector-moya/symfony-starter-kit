@@ -1,0 +1,83 @@
+/* ──────────────────────────────────────────────
+   CSS Custom Properties — Design Tokens
+   Override these to theme the entire app.
+   ────────────────────────────────────────────── */
+:root {
+    /* Brand colours */
+    --color-primary:      #4f46e5;
+    --color-primary-dark: #3730a3;
+    --color-secondary:    #7c3aed;
+    --color-accent:       #06b6d4;
+
+    /* Neutrals */
+    --color-background:   #ffffff;
+    --color-surface:      #f9fafb;
+    --color-border:       #e5e7eb;
+    --color-text:         #111827;
+    --color-text-muted:   #6b7280;
+
+    /* Feedback */
+    --color-success:      #10b981;
+    --color-warning:      #f59e0b;
+    --color-danger:       #ef4444;
+    --color-info:         #3b82f6;
+
+    /* Spacing scale */
+    --space-xs:  0.25rem;
+    --space-sm:  0.5rem;
+    --space-md:  1rem;
+    --space-lg:  1.5rem;
+    --space-xl:  2rem;
+    --space-2xl: 3rem;
+
+    /* Typography */
+    --font-sans:  system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    --font-mono:  'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+    --font-size-base: 1rem;
+    --line-height-base: 1.6;
+
+    /* Border radius */
+    --radius-sm: 0.25rem;
+    --radius-md: 0.5rem;
+    --radius-lg: 0.75rem;
+    --radius-xl: 1rem;
+
+    /* Shadows */
+    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+
+    /* Transitions */
+    --transition-fast:   150ms ease;
+    --transition-normal: 250ms ease;
+    --transition-slow:   400ms ease;
+}
+
+/* ── Base ────────────────────────────────────── */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: var(--font-sans);
+    font-size: var(--font-size-base);
+    line-height: var(--line-height-base);
+    color: var(--color-text);
+    background-color: var(--color-background);
+}
+
+code, pre, kbd {
+    font-family: var(--font-mono);
+}
+
+/* ── Utility classes ─────────────────────────── */
+.text-primary-brand  { color: var(--color-primary) !important; }
+.bg-primary-brand    { background-color: var(--color-primary) !important; }
+
+/* ── Custom scrollbar (WebKit) ───────────────── */
+::-webkit-scrollbar       { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: var(--color-surface); }
+::-webkit-scrollbar-thumb { background: var(--color-border); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: var(--color-text-muted); }
