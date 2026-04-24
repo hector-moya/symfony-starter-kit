@@ -1,0 +1,4 @@
+pentatrion_vite:
+    build_directory: build
+    # default_build sends all asset requests through /build/<hash>
+    # dev server runs on 5173 by default; Vite plugin outputs entrypoints.json

@@ -2,10 +2,20 @@
     "name": "symfony-starter-kit",
     "version": "1.0.0",
     "description": "Symfony 7 Starter Kit",
+    "type": "module",
     "private": true,
     "scripts": {
-        "build": "echo 'AssetMapper handles assets — no build step needed. Run: php bin/console importmap:install'",
-        "dev": "echo 'AssetMapper handles assets — no build step needed.'"
+        "dev": "vite",
+        "build": "vite build"
     },
-    "devDependencies": {}
+    "devDependencies": {
+        "vite": "^5.4",
+        "vite-plugin-symfony": "^7.1"
+    },
+    "dependencies": {
+        "@alpinejs/collapse": "^3.14.1",
+        "@popperjs/core": "^2.11.8",
+        "alpinejs": "^3.14.1",
+        "bootstrap": "^5.3.3"
+    }
 }

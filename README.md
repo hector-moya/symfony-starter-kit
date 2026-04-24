@@ -1,335 +1,142 @@
-# ⚡ Symfony Starter Kit
+# Symfony Starter Kit
 
-A modern, production-ready Symfony 7 starter kit. One command installs everything.
-
-```bash
-chmod +x setup.sh && ./setup.sh
-```
-
----
+A modern, lean Symfony 7 starter kit with Vite for asset bundling.
 
 ## Requirements
 
-| Tool | Version | Notes |
-|---|---|---|
-| PHP | 8.3+ | with `pdo_sqlite` extension for local dev |
-| Composer | 2.x | [getcomposer.org](https://getcomposer.org) |
-| Symfony CLI | optional | for `symfony server:start` |
-| Node / npm | optional | AssetMapper doesn't require a build step |
+| Tool | Version |
+|---|---|
+| PHP | 8.3+ (with `pdo_sqlite`) |
+| Composer | 2.x |
+| Node | 20.19+ or 22.12+ |
+| npm | 10+ |
 
----
+[Laravel Herd](https://herd.laravel.com) (macOS / Windows) handles all of these for you.
 
 ## Quick Start
 
 ```bash
-# 1. Clone the repository
-git clone https://github.com/your-org/symfony-starter-kit.git my-project
+git clone <repo-url> my-project
 cd my-project
-
-# 2. Run setup (installs deps, migrates DB, seeds data, installs assets)
-chmod +x setup.sh && ./setup.sh
-
-# 3. Start the dev server
-symfony server:start          # with Symfony CLI
-# or
-php -S localhost:8000 -t public  # with plain PHP
-
-# 4. Open your browser
-open http://localhost:8000
+composer install                  # PHP deps + .env + DB + migrations + fixtures
+npm install && npm run build      # JS deps + asset build
 ```
+
+That's it. Open the project in your browser:
+
+- **Laravel Herd**: drop the project in your Herd directory and visit `https://<project-name>.test`
+- **Symfony CLI**: `symfony server:start`
+- **Plain PHP**: `php -S localhost:8000 -t public`
 
 **Demo login:** `admin@example.com` / `password`
 
----
+## What Composer install does
 
-## Laravel Herd Setup
+The `composer install` step automatically runs `php bin/console app:install`, which:
 
-Herd manages PHP versions and serves any PHP project — it is not Laravel-specific.
+1. Copies `.env.example` to `.env` if missing
+2. Generates `APP_SECRET`
+3. Creates the SQLite database
+4. Runs migrations
+5. Loads fixtures (admin user + 10 random users)
 
-1. Install [Laravel Herd](https://herd.laravel.com) (macOS / Windows)
-2. Add a new site pointing to the **`/public`** folder of this project:
-   - Open Herd → Sites → Add site
-   - Set **document root** to `<project-path>/public`
-3. Run the setup script: `./setup.sh`
-4. Visit `http://<site-name>.test` in your browser
+This works identically on macOS, Linux, and Windows (PowerShell or Git Bash) — no shell scripts.
 
-> Herd automatically picks up the correct PHP version and handles virtual hosts.
+## Frontend
 
----
-
-## Symfony CLI Setup
+Assets are bundled by [Vite](https://vitejs.dev) via [`pentatrion/vite-bundle`](https://symfony-vite.pentatrion.com/).
 
 ```bash
-# Install Symfony CLI (macOS)
-brew install symfony-cli/tap/symfony-cli
-
-# Install Symfony CLI (Linux)
-curl -sS https://get.symfony.com/cli/installer | bash
-
-# Start the dev server with TLS
-symfony server:start --no-tls   # HTTP
-symfony server:start             # HTTPS (self-signed cert)
+npm run dev      # Vite dev server (port 5173) with HMR
+npm run build    # Production build → public/build/
 ```
 
-Visit `http://127.0.0.1:8000` (or the HTTPS URL shown in the terminal).
+Edit `assets/app.js` (entrypoint) and `assets/styles/app.css`. Bootstrap 5 and Alpine.js are pre-wired.
 
----
-
-## Make Commands
+To add a JS package:
 
 ```bash
-make help         # List all available commands
-
-make setup        # Full install (composer, DB, fixtures, assets)
-make serve        # Start dev server
-make migrate      # Run pending migrations
-make migrate-diff # Generate migration from entity changes
-make fixtures     # Reload seed data (clears existing)
-make db-reset     # Drop, recreate, migrate, and seed
-
-make entity       # Interactive: create/update a Doctrine entity
-make controller   # Interactive: create a controller
-make form         # Interactive: create a form type
-
-make cache-clear  # Clear Symfony cache
-make routes       # List all routes
-make services     # List all services
-make lint         # Lint Twig and YAML files
-make test         # Run PHPUnit
+npm install some-package
+# then import it in assets/app.js
 ```
-
----
-
-## Project Structure
-
-```
-symfony-starter-kit/
-├── assets/
-│   ├── app.js              # JS entrypoint (Bootstrap + Alpine.js)
-│   └── styles/
-│       └── app.css         # CSS custom properties starter
-├── bin/
-│   └── console             # Symfony console
-├── config/
-│   ├── bundles.php         # Registered bundles
-│   ├── routes.yaml         # Route loading
-│   ├── services.yaml       # Service container
-│   └── packages/           # Bundle configuration
-│       ├── doctrine.yaml
-│       ├── framework.yaml
-│       ├── security.yaml
-│       ├── twig.yaml
-│       ├── asset_mapper.yaml
-│       └── dev/            # Dev-only config
-├── migrations/             # Doctrine migrations
-├── public/
-│   └── index.php           # Web entry point (document root)
-├── src/
-│   ├── Controller/         # HTTP controllers
-│   ├── DataFixtures/       # Database seeders
-│   ├── Entity/             # Doctrine entities
-│   ├── EventListener/      # Event subscribers/listeners
-│   ├── Form/               # Symfony form types
-│   ├── Repository/         # Doctrine repositories
-│   ├── Service/            # Business logic services
-│   └── Kernel.php
-├── templates/
-│   ├── base.html.twig      # Base layout
-│   ├── components/         # Reusable Twig partials
-│   ├── home/
-│   │   └── index.html.twig
-│   └── security/
-│       └── login.html.twig
-├── .env.example            # Environment variable reference
-├── importmap.php           # AssetMapper: Bootstrap + Alpine.js
-├── Makefile
-├── setup.sh                # Unix setup script
-└── setup.bat               # Windows setup script
-```
-
----
 
 ## Database
 
-The default database is **SQLite** — zero config, works instantly.
+Default is SQLite at `var/data.db`. Switch to MySQL or PostgreSQL by editing `DATABASE_URL` in `.env`:
 
 ```
-# .env
-DATABASE_URL="sqlite:///%kernel.project_dir%/var/data.db"
-```
-
-Switch to MySQL or PostgreSQL by editing `.env`:
-
-```bash
-# MySQL
 DATABASE_URL="mysql://user:pass@127.0.0.1:3306/dbname?serverVersion=8.0&charset=utf8mb4"
-
-# PostgreSQL
 DATABASE_URL="postgresql://user:pass@127.0.0.1:5432/dbname?serverVersion=16&charset=utf8"
 ```
 
-Then recreate the schema:
+Then re-run `php bin/console app:install`.
+
+## Make commands
 
 ```bash
-make db-reset
+make help         # List all available commands
+make serve        # Start Symfony CLI dev server
+make migrate      # Run pending migrations
+make migrate-diff # Generate migration from entity changes
+make fixtures     # Reload seed data
+make db-reset     # Drop, recreate, migrate, seed
+make entity       # make:entity
+make controller   # make:controller
+make cache-clear  # cache:clear
+make routes       # debug:router
+make lint         # Lint Twig + YAML
+make test         # PHPUnit
 ```
 
----
+## Project structure
 
-## Creating Entities
-
-```bash
-# 1. Generate the entity interactively
-make entity
-# -> php bin/console make:entity Post
-
-# 2. Generate a migration for the schema change
-make migrate-diff
-# -> php bin/console doctrine:migrations:diff
-
-# 3. Apply the migration
-make migrate
 ```
-
-### Example entity (attribute-based mapping)
-
-```php
-#[ORM\Entity(repositoryClass: PostRepository::class)]
-class Post
-{
-    #[ORM\Id, ORM\GeneratedValue, ORM\Column]
-    private ?int $id = null;
-
-    #[ORM\Column(length: 255)]
-    private ?string $title = null;
-
-    #[Gedmo\Timestampable(on: 'create')]
-    #[ORM\Column]
-    private ?\DateTimeImmutable $createdAt = null;
-}
+.
+├── assets/
+│   ├── app.js                # Vite entrypoint (Bootstrap + Alpine)
+│   └── styles/app.css        # Global styles + design tokens
+├── bin/console
+├── config/
+│   ├── bundles.php
+│   ├── packages/             # Bundle config (doctrine, security, twig, vite, ...)
+│   ├── routes/               # Route loaders
+│   ├── routes.yaml
+│   └── services.yaml
+├── migrations/               # Doctrine migrations
+├── public/
+│   ├── build/                # Vite output (git-ignored)
+│   └── index.php
+├── src/
+│   ├── Command/AppInstallCommand.php
+│   ├── Controller/
+│   ├── DataFixtures/
+│   ├── Entity/User.php
+│   ├── Repository/
+│   └── Kernel.php
+├── templates/
+├── .env.example
+├── composer.json
+├── package.json
+├── vite.config.js
+└── Makefile
 ```
-
----
-
-## Creating Controllers
-
-```bash
-make controller
-# -> php bin/console make:controller PostController
-```
-
-Or manually:
-
-```php
-#[Route('/posts', name: 'app_post_')]
-class PostController extends AbstractController
-{
-    #[Route('/', name: 'index')]
-    public function index(PostRepository $repo, PaginatorInterface $paginator, Request $request): Response
-    {
-        $query = $repo->createQueryBuilder('p')->getQuery();
-        $posts = $paginator->paginate($query, $request->query->getInt('page', 1), 20);
-
-        return $this->render('post/index.html.twig', ['posts' => $posts]);
-    }
-}
-```
-
----
-
-## Creating Forms
-
-```bash
-make form
-# -> php bin/console make:form PostType
-```
-
-```php
-class PostType extends AbstractType
-{
-    public function buildForm(FormBuilderInterface $builder, array $options): void
-    {
-        $builder
-            ->add('title', TextType::class)
-            ->add('body', TextareaType::class);
-    }
-
-    public function configureOptions(OptionsResolver $resolver): void
-    {
-        $resolver->setDefaults(['data_class' => Post::class]);
-    }
-}
-```
-
----
-
-## Frontend (AssetMapper)
-
-Bootstrap 5 and Alpine.js load via native Symfony AssetMapper — **no Node build step required**.
-
-Assets are declared in `importmap.php`. To add a new JS package:
-
-```bash
-php bin/console importmap:require lodash
-```
-
-To regenerate downloaded assets:
-
-```bash
-php bin/console importmap:install
-```
-
-Edit `assets/app.js` as your JS entrypoint and `assets/styles/app.css` for global styles.
-
----
 
 ## Authentication
 
-The starter includes a scaffolded login flow:
+The starter ships with a working login flow:
 
-- `src/Entity/User.php` — implements `UserInterface` + `PasswordAuthenticatedUserInterface`
-- `config/packages/security.yaml` — form-login firewall + password hasher
-- `src/Controller/SecurityController.php` — login/logout routes
-- `templates/security/login.html.twig` — login form
+- `User` entity with `UserInterface` + `PasswordAuthenticatedUserInterface`
+- `form_login` firewall + password hasher (`config/packages/security.yaml`)
+- `/login` and `/logout` routes (`SecurityController`)
+- Bootstrap-styled login form (`templates/security/login.html.twig`)
 
-**Demo credentials** (loaded by fixtures): `admin@example.com` / `password`
+Demo credentials are loaded by fixtures: `admin@example.com` / `password`.
 
-To add registration, run:
+## Environment variables
 
-```bash
-php bin/console make:registration-form
-```
-
----
-
-## Environment Variables
-
-| Variable | Default | Description |
+| Variable | Default | Purpose |
 |---|---|---|
-| `APP_ENV` | `dev` | Application environment (`dev`, `prod`, `test`) |
-| `APP_SECRET` | auto-generated | Cryptographic secret (generated by `setup.sh`) |
-| `DATABASE_URL` | SQLite | Database connection string |
-| `MAILER_DSN` | `null://null` | Mailer transport (null discards all emails) |
-
-Copy `.env.example` to `.env` and adjust as needed. Never commit `.env` to version control.
-
----
-
-## Installed Packages
-
-| Package | Purpose |
-|---|---|
-| `symfony/framework-bundle` | Core framework |
-| `symfony/twig-bundle` + `twig/extra-bundle` | Templating |
-| `symfony/doctrine-bundle` + `doctrine/orm` | Database ORM |
-| `doctrine/doctrine-migrations-bundle` | Schema migrations |
-| `doctrine/doctrine-fixtures-bundle` | Database seeding |
-| `fakerphp/faker` | Fake data generation |
-| `symfony/security-bundle` | Authentication & authorization |
-| `symfony/asset-mapper` | Native asset pipeline |
-| `symfony/form` + `symfony/validator` | Forms & validation |
-| `symfony/http-client` | HTTP requests |
-| `stof/doctrine-extensions-bundle` | Timestampable, Sluggable, etc. |
-| `knplabs/knp-paginator-bundle` | Pagination |
-| `symfony/maker-bundle` *(dev)* | Code generation |
-| `symfony/profiler-pack` *(dev)* | Debug toolbar |
+| `APP_ENV` | `dev` | `dev`, `prod`, or `test` |
+| `APP_SECRET` | auto-generated | Cryptographic secret |
+| `DATABASE_URL` | SQLite at `var/data.db` | DB connection string |
+| `MAILER_DSN` | `null://null` | Mail transport |
